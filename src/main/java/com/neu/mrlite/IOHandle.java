@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -24,6 +23,8 @@ public class IOHandle {
 	/**
 	 * I/O Handles
 	 */
+	private static String inFile;
+	private static String outDir;
 	private BufferedReader fr;
 	private PrintStream fw;
 	
@@ -35,14 +36,23 @@ public class IOHandle {
 	 * @throws UnsupportedEncodingException 
 	 */
 	public IOHandle(String inFile, String outDir) throws FileNotFoundException, UnsupportedEncodingException {
+		IOHandle.inFile = inFile;
+		IOHandle.outDir = outDir;
+		getIOHandle();
+	}
+	
+	public IOHandle(IOHandle io) throws FileNotFoundException, UnsupportedEncodingException {
+		getIOHandle();
+	}
+	
+	private void getIOHandle() throws FileNotFoundException {
 		fr = new BufferedReader(new FileReader(inFile));
 		File dir = new File(outDir);
 		if(!dir.isDirectory()) {
 			dir.mkdirs();
 		}
-		fw = new PrintStream(new FileOutputStream(outDir+"/part-0"));
+		fw = new PrintStream(new FileOutputStream(outDir+"/part-0", true));
 	}
-	
 	/**
 	 * Close the I/O Handles safely
 	 */

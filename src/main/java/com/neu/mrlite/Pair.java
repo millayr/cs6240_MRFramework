@@ -14,6 +14,7 @@ public class Pair<T1, T2> {
 		return "{"+key+": "+value+"}";
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public boolean equals(Object o) {
 		if(o == null) return false;
 		Pair x = (Pair) o;

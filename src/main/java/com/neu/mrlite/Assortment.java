@@ -1,8 +1,12 @@
 package com.neu.mrlite;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,71 +32,18 @@ import java.util.Map;
 public class Assortment<T> implements Collection<T>, ParallelOperations<T>{
 	private List<T> list;
 	private static IOHandle IOHANDLE;
-	
+	private static List<POCallback> exec = new ArrayList<>();
 	public Assortment() {
 		list = new ArrayList<T>();
-	} 
+	}
 	/**
 	 * Map Operation
 	 * 
 	 */
-	public <Q> Assortment<Q> map(POCallback<T> callback,
-			Class<? extends Q> ret) {
+	public <Q> Assortment<Q> parallel(POCallback callback) {
 		// TODO Auto-generated method stub
 		Assortment<Q> res = new Assortment<Q>();
-		for(T item: this){
-			callback.process(item);
-			if(ret.equals(Pair.class)) {
-				res.add(ret.cast(new Pair<Object, Object>(callback.getKey(), 
-						callback.getValue())));
-			} else {
-				res.add(ret.cast(callback.getValue()));
-			}
-		}
-		return res;
-	}
-	
-	/**
-	 * Combine Operation
-	 */
-	public <Q> Assortment<Q> combine(POCallback<T> callback,
-			Class<? extends Q> ret) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	/**
-	 * Reduce Operation 
-	 */
-	public <P,Q,R> Assortment<Q> reduce(POCallback<Pair<P, List<R>>> callback,
-			Class<? extends Q> ret) {
-		// TODO Auto-generated method stub
-		Assortment<Q> res = new Assortment<Q>();
-		Map<P, List<R>> m = new HashMap<P, List<R>>();
-		for(T item: this){
-			if(item instanceof Pair) {
-				Pair i = (Pair) item;
-				List<R> ls = m.get(i.key);
-				if(ls == null){
-					ls = new ArrayList<R>();
-					m.put((P)i.key, ls);
-				}
-				ls.add((R) i.value);
-			}
-		}
-	
-		for(P key: m.keySet()) {
-			callback.process(new Pair<P, List<R>>(key, m.get(key)));
-			if(ret.equals(Pair.class)) {
-				 IOHANDLE.write(callback.getKey()+"\t"+callback.getValue());
-				 
-				 res.add(ret.cast(new Pair<Object, Object>(callback.getKey(), 
-						callback.getValue())));
-			} else {
-				IOHANDLE.write(callback.getValue());
-				res.add(ret.cast(callback.getValue()));
-			}
-		}
+		exec.add(callback);
 		return res;
 	}
 	
@@ -194,16 +145,29 @@ public class Assortment<T> implements Collection<T>, ParallelOperations<T>{
 	 * @return Assortment&lt;String&gt;
 	 */
 	public static Assortment<String> readInputFrom(IOHandle io) {
-		String line = "";
-		Assortment<String> newAssort = new Assortment<String>();
 		IOHANDLE = io;
-		try {
-			while((line = io.readLine()) != null) {
-				newAssort.add(line);
+		Assortment<String> newAssort = new Assortment<String>();
+		exec.add(new IOCallback() {
+			@Override
+			public void process(Writable data) {
+				// dummy
 			}
-		} catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
+			
+			@Override
+			public void process(IOHandle io) {
+				List<Writable> lines = new ArrayList<Writable> ();
+				String line;
+				try {
+					while((line = io.readLine()) != null) {
+						lines.add(new Writable(line));
+					}
+					emit(lines);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		return newAssort;
 	}
 	
@@ -211,7 +175,13 @@ public class Assortment<T> implements Collection<T>, ParallelOperations<T>{
 		return list.toString();
 	}
 	
-	final static public void close() {
-		IOHANDLE.close();
+	final static public void start() throws FileNotFoundException, UnsupportedEncodingException, UnknownHostException {
+		JobServer.startJobServer(IOHANDLE);
+		// Throw away code...
+		
+		InetAddress IP=InetAddress.getLocalHost();
+		Constants.NODES = 1;
+		Constants.IP = IP.getHostAddress();
+		new Thread(new ParallelOperation(new IOHandle(IOHANDLE), exec)).start();
 	}
 }

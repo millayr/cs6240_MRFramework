@@ -1,6 +1,5 @@
 package com.neu.mrlite;
 
-import java.util.List;
 /**
  * The contract for API users to access the public API's
  * It contains the detailed structure of an operation execution.
@@ -24,20 +23,9 @@ public interface ParallelOperations<T> {
 	 * 
 	 * @param callback POCallback
 	 * @param ret Class 'Q'
-	 * @return Assortment&ltQ&gt;
+	 * @return Assortment&lt;Q&gt;
 	 */
-	public <Q> Assortment<Q> map(POCallback<T> callback, Class<? extends Q> ret);
-	/**
-	 * Combine operation to accumulate the results from map and relaying
-	 * it back to the reducer. It follows the same line of Hadoop implementation
-	 * which makes the combiner take the same input as reducer and produce the
-	 * output like a map.
-	 * 
-	 * @param callback POCallback
-	 * @param ret Class 'Q'
-	 * @return Assortment&ltQ&gt;
-	 */
-	public <Q> Assortment<Q> combine(POCallback<T> callback, Class<? extends Q> ret);
+	public <Q> Assortment<Q> parallel(POCallback callback);
 	/**
 	 * Reduce operation to agglomerate the final results form the intermediate map
 	 * and combine operations. The contract to reducer is slightly different from map
@@ -48,7 +36,7 @@ public interface ParallelOperations<T> {
 	 * 
 	 * @param callback POCallback
 	 * @param ret Class 'Q'
-	 * @return Assortment&ltQ&gt;
+	 * @return Assortment&lt;Q&gt;
+	 * public <P,Q,R> Assortment<Q> reduce(POCallback<Pair<P, List<R>>> callback, Class<? extends Q> ret);
 	 */
-	public <P,Q,R> Assortment<Q> reduce(POCallback<Pair<P, List<R>>> callback, Class<? extends Q> ret);
 }

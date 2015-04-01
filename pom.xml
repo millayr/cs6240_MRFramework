@@ -4,4 +4,11 @@
   <artifactId>mrlite</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <description>Lite implementation of MapReduce framework on Java</description>
+  <dependencies>
+  	<dependency>
+		<groupId>com.google.code.gson</groupId>
+		<artifactId>gson</artifactId>
+		<version>2.3.1</version>
+	</dependency>
+  </dependencies>
 </project>

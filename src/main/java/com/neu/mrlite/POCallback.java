@@ -7,7 +7,7 @@ package com.neu.mrlite;
  * T determines what type of data does the callback processes
  * @param <T>
  */
-public abstract class POCallback<T>{
+public abstract class POCallback{
 	/**
 	 * naive emit result collectors
 	 */
@@ -20,7 +20,7 @@ public abstract class POCallback<T>{
 	 * on API an operation call.
 	 * @param data
 	 */
-	public abstract void process(T data);
+	public abstract void process(Writable data);
 	
 	/**
 	 * output of the process method needs to be collected
