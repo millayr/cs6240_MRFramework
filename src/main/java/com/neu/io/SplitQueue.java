@@ -32,6 +32,22 @@ public class SplitQueue {
 	}
 	
 	/**
+	 * Constructor.  Sets the file, the offsets in bytes, and the block size in lines.  
+	 * Starts a stand alone reader thread for retrieving lines on demand.
+	 * @param filePath	File to process for this job
+	 * @param start	byte offset to begin processing
+	 * @param end	byte offset to finish processing
+	 * @param blockSize	number of lines for a given block read
+	 * @throws IOException
+	 */
+	public SplitQueue(String filePath, long start, long end, int blockSize) throws IOException {
+		lines_per_block = blockSize;
+		reader = new SplitQueueReader(filePath, start, end);
+		Thread tReader = new Thread(reader);
+		tReader.start();
+	}
+	
+	/**
 	 * Retrieve the next block of lines to send to a client.  If the split is empty, throw
 	 * a NoSuchElement exception.
 	 * @return	String[] of lines

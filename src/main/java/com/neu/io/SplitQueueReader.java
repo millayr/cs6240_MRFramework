@@ -15,8 +15,8 @@ public class SplitQueueReader implements Runnable {
 	private BlockingQueue<String> lazyBuffer;
 	private RandomAccessFile chunk;
 	private long offsetEnd;
-	private int lazy_buffer_min_length;
-	private int lazy_buffer_max_length;
+	private int lazy_buffer_min_length = 15;
+	private int lazy_buffer_max_length = 30;
 	
 	/**
 	 * Initialize the reader with the file and the offset boundaries.  Sets the min and max
@@ -30,8 +30,6 @@ public class SplitQueueReader implements Runnable {
 		chunk = new RandomAccessFile(filePath, "r");
 		chunk.seek(start);
 		offsetEnd = end;
-		lazy_buffer_min_length = 15;
-		lazy_buffer_max_length = 30;
 		lazyBuffer = new LinkedBlockingQueue<String>();
 	}
 	
