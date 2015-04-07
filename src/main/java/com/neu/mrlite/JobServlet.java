@@ -10,23 +10,22 @@ public class JobServlet implements Runnable{
 	private static final String TERMINATE = "30";
 	private static final int SIGTERM = 30;
 	private Socket socket = null;
-	private IOHandle io;
 	private int intr = 0;
-	public JobServlet (Socket socket, IOHandle io) {
+	private PrintWriter out;
+	private BufferedReader in;
+	public JobServlet (Socket socket) {
 		this.socket = socket;
-		this.io = io;
 	}
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		try (
-	            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-	            BufferedReader in = new BufferedReader(
-	                new InputStreamReader(
-	                    socket.getInputStream()));
-	        ) {
+		try {
+			out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(
+                new InputStreamReader(
+                    socket.getInputStream()));
 	            String inputLine;
+	            System.out.println("Started connection from:"+socket.getPort());
 	            while ((inputLine = in.readLine()) != null) {
 	            	if(inputLine.equals(TERMINATE)) {
 	            		this.intr = SIGTERM;
@@ -40,6 +39,10 @@ public class JobServlet implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
+	}
+	
+	public void publish(String cmd) {
+		out.println(cmd);
 	}
 	
 	public boolean isInterrupted() {

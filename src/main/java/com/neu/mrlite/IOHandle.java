@@ -6,8 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
+
+import com.google.gson.Gson;
 
 /**
  * Input and output handle for reading and writing from parallel workers.
@@ -25,9 +30,13 @@ public class IOHandle {
 	 */
 	private static String inFile;
 	private static String outDir;
-	private BufferedReader fr;
-	private PrintStream fw;
-	
+	private BufferedReader in;
+	private PrintWriter out;
+	private Socket socket;
+	private String[] inBlock;
+	private int splitIndex;
+	private Gson gson;
+	private int nextLine;
 	/**
 	 * Input file path and output directory are both HDFS path in future scope 
 	 * @param inFile
@@ -46,21 +55,34 @@ public class IOHandle {
 	}
 	
 	private void getIOHandle() throws FileNotFoundException {
-		fr = new BufferedReader(new FileReader(inFile));
-		File dir = new File(outDir);
-		if(!dir.isDirectory()) {
-			dir.mkdirs();
+		gson = new Gson();
+		try {
+			nextLine = 0;
+			inBlock = new String[] {};
+			socket = new Socket(Constants.IP, 2122);
+		    out =
+		        new PrintWriter(socket.getOutputStream(), true);
+		    in = new BufferedReader(
+		    		new InputStreamReader(socket.getInputStream()));
+		    String line = in.readLine();
+		    if(line != null) {
+		    	try {
+		    		System.out.println(splitIndex);
+		    		splitIndex = Integer.parseInt(line);
+		    	} catch(Exception e) {
+		    		System.out.println(e.getMessage());
+		    	}
+		    }
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
-		fw = new PrintStream(new FileOutputStream(outDir+"/part-0", true));
 	}
 	/**
 	 * Close the I/O Handles safely
 	 */
 	public void close() {
 		try {
-			fw.flush();
-			fr.close();
-			fw.close();
+			socket.close();
 		} catch(Exception e) {
 			System.out.println("error @ ioHandle.close()");
 		}
@@ -69,10 +91,26 @@ public class IOHandle {
 	/**
 	 * Read the file line by line, It is just a wrapper function
 	 * @return
-	 * @throws IOException
+	 * @throws Exception 
 	 */
-	public String readLine() throws IOException {
-		return fr.readLine();
+	public String readLine() throws Exception {
+		try {
+			if(inBlock.length == 0) {
+				String line = in.readLine();
+				if(line != null) {
+					inBlock = gson.fromJson(line, String[].class);
+					nextLine = 0;
+				}
+			}
+			if(nextLine < inBlock.length)
+				return inBlock[nextLine++];
+			else {
+				inBlock = new String[] {};
+				return null;
+			}
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 	
 	/**
@@ -80,6 +118,6 @@ public class IOHandle {
 	 * @param o
 	 */
 	public void write(Object o) {
-		fw.println(o);
+		
 	}
 }

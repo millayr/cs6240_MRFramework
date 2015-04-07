@@ -24,14 +24,12 @@ public class ParallelOperation implements Runnable{
 	@SuppressWarnings("unchecked")
 	public void run() {
 		Gson gson = new Gson();
-		try (
-				Socket socket = new Socket("192.168.1.9", 2120);
-			    PrintWriter out =
-			        new PrintWriter(socket.getOutputStream(), true);
-			    BufferedReader in = new BufferedReader(
-			        new InputStreamReader(socket.getInputStream())))
-			 {
-		
+		try {
+			Socket socket = new Socket("192.168.1.9", 2120);
+		    PrintWriter out =
+		        new PrintWriter(socket.getOutputStream(), true);
+		    BufferedReader in = new BufferedReader(
+		        new InputStreamReader(socket.getInputStream()));
 			
 			System.out.println("Opened connection for:"+socket.getLocalPort());
 			Object outKey = null;

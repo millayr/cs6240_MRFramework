@@ -2,25 +2,24 @@ package com.neu.mrlite;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.List;
 import java.util.ArrayList;
+
+import com.neu.io.FileSplitServer;
 
 public class JobServer implements Runnable {
 	private static final int SIGTERM = 30;
 	int intr = 0;
-	IOHandle io;
 	List<JobServlet> servlets;
 	private static JobServer jobServer = null;
-	
-	private JobServer(IOHandle io) {
-		this.io = io;
+	private JobServer() {
 		servlets = new ArrayList<JobServlet>();
 	}
 	
 	public void run() {
-		try (ServerSocket socket = new ServerSocket(2120))
+		try
 		{
+			ServerSocket socket = new ServerSocket(2120);
 			System.out.println("Opened server connection:"+socket.getLocalPort());
 			while(!isInterrupted()) {
 				if(servlets.size() == Constants.NODES)
@@ -32,7 +31,7 @@ public class JobServer implements Runnable {
 					if(fin)
 						this.interrupt(SIGTERM);
 				} else {
-					JobServlet servlet = new JobServlet(socket.accept(), io);
+					JobServlet servlet = new JobServlet(socket.accept());
 					servlets.add(servlet);
 					new Thread(servlet).start();
 				}
@@ -45,6 +44,12 @@ public class JobServer implements Runnable {
 		}
 	}
 	
+	public void publish(String cmd) {
+		for(JobServlet job: servlets) {
+			job.publish(cmd);
+		}
+	}
+	
 	public boolean isInterrupted() {
 		return (intr == 30);
 	}
@@ -53,10 +58,19 @@ public class JobServer implements Runnable {
 		intr = SIGNAL;
 	}
 	
-	public static void startJobServer(IOHandle io) {
+	public static JobServer startJobServer() {
 		if(jobServer == null) {
-			jobServer = new JobServer(io); 
+			jobServer = new JobServer(); 
 			new Thread(jobServer).start();
 		}
+		JobListener.start();
+		return jobServer;
+	}
+	
+	public static void publishJob(String cmd) {
+		if(jobServer == null) {
+			startJobServer();
+		}
+		jobServer.publish(cmd);
 	}
 }

@@ -1,15 +1,13 @@
 package com.neu.mrlite;
 
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Generic Collection type, that also holds the contract of
@@ -32,7 +30,7 @@ import java.util.Map;
 public class Assortment<T> implements Collection<T>, ParallelOperations<T>{
 	private List<T> list;
 	private static IOHandle IOHANDLE;
-	private static List<POCallback> exec = new ArrayList<>();
+	private static List<POCallback> exec = new ArrayList<POCallback>();
 	public Assortment() {
 		list = new ArrayList<T>();
 	}
@@ -112,30 +110,6 @@ public class Assortment<T> implements Collection<T>, ParallelOperations<T>{
 		// TODO Auto-generated method stub
 		
 	}
-	/**
-	 * returns the class type of the given class
-	 * to create a resultant Assortment DataSet.
-	 * @param responseType
-	 * @return
-	 */
-	public static <Q> Class<? extends Q> dataSet(
-			Class<? extends Q> responseType) {
-		return responseType;
-	}
-	
-	/**
-	 * returns the Pair&lt;K, V&gt; type to create a
-	 * resultant Assortment DataTable.
-	 * @param key
-	 * @param value
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <P,Q> Class<? extends Pair<P, Q>> dataTable(
-			Class<? extends P> key,
-			Class<? extends Q> value) {
-		return (Class<? extends Pair<P, Q>>) Pair.class;
-	}
 	
 	/**
 	 * Reads the input file and performs the split (future scope).
@@ -162,7 +136,7 @@ public class Assortment<T> implements Collection<T>, ParallelOperations<T>{
 						lines.add(new Writable(line));
 					}
 					emit(lines);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -171,17 +145,15 @@ public class Assortment<T> implements Collection<T>, ParallelOperations<T>{
 		return newAssort;
 	}
 	
-	public String toString() {
-		return list.toString();
+	public static List<POCallback> getExecChain() {
+		return exec;
 	}
 	
-	final static public void start() throws FileNotFoundException, UnsupportedEncodingException, UnknownHostException {
-		JobServer.startJobServer(IOHANDLE);
-		// Throw away code...
-		
-		InetAddress IP=InetAddress.getLocalHost();
-		Constants.NODES = 1;
-		Constants.IP = IP.getHostAddress();
-		new Thread(new ParallelOperation(new IOHandle(IOHANDLE), exec)).start();
+	public static IOHandle getIOHandle() throws FileNotFoundException, UnsupportedEncodingException {
+		return IOHANDLE;
+	}
+	
+	public String toString() {
+		return list.toString();
 	}
 }
