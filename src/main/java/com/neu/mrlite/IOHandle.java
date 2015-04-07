@@ -96,17 +96,20 @@ public class IOHandle {
 	public String readLine() throws Exception {
 		try {
 			if(inBlock.length == 0) {
+				out.println("next");
 				String line = in.readLine();
 				if(line != null) {
 					inBlock = gson.fromJson(line, String[].class);
 					nextLine = 0;
+				} else {
+					return null;
 				}
 			}
 			if(nextLine < inBlock.length)
 				return inBlock[nextLine++];
 			else {
 				inBlock = new String[] {};
-				return null;
+				return readLine();
 			}
 		} catch (Exception e) {
 			throw e;
