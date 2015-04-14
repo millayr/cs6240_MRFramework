@@ -32,7 +32,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.neu.mrlite.MRLiteBoot</mainClass>
+							<mainClass>com.neu.mrlite.master.MRLiteMasterServerBoot</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
