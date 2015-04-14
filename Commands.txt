@@ -1,0 +1,8 @@
+//To start the MRLite Master Server
+java -jar C:\Users\user\Desktop\mrlite-master-0.0.1-SNAPSHOT.jar com.neu.mrlite.master.MRLiteMasterServerBoot
+
+// To Start the Client Node 
+java -jar C:\Users\user\Desktop\mrlite-client-0.0.1-SNAPSHOT.jar localhost
+
+// TO Submit Job using JobSubmitter
+java -jar C:\Users\user\Desktop\mrlite-sdk-0.0.1-SNAPSHOT.jar localhost mrlite -jar C:\Users\user\Desktop\mrlite-test-0.0.1-SNAPSHOT.jar com.neu.test.mrlite.TestInterface C:\Users\user\Desktop\sample.txt C:\Users\user\Desktop\test

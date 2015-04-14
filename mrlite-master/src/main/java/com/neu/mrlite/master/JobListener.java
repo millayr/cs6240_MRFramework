@@ -39,6 +39,7 @@ public class JobListener implements Runnable {
                 String line;
                 while ((line = in.readLine().trim()) != null) {
                     try {
+                        System.out.println("Job Command Received: " + line);
                         // this is serialized JobConf object, deserialize it
                         String[] cmd = line.split("\\s+");
                         if (cmd.length > 3) {
@@ -105,6 +106,10 @@ public class JobListener implements Runnable {
 
         // Load Mapper Class
         Class<?> cls = cl.loadClass(args[3]);
+        /*URL url = new URL("jar", "","file:" + file.getAbsolutePath()+"!/");
+        ClassLoader loader = URLClassLoader.newInstance(new URL[] { url },
+                getClass().getClassLoader());
+        Class<?> clazz = Class.forName(args[3], true, loader);*/
 
         // Copy the Input String Arguments and execute the main method
         String argsForMainClass[] = new String[(args.length - 4)];
@@ -113,6 +118,8 @@ public class JobListener implements Runnable {
         // Get handle of run method using reflection
         Method runMethod = cls.getMethod("main", String[].class);
 
+        System.out
+                .println("Invoking static void main of user's MR job class.. ");
         // Invoke run method
         runMethod.invoke(null, (Object) argsForMainClass);
     }

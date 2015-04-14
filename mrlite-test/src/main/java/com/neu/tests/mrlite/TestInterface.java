@@ -5,12 +5,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import com.neu.mrlite.common.JobConf;
 import com.neu.mrlite.common.datastructures.Assortment;
 import com.neu.mrlite.common.datastructures.IOHandle;
 import com.neu.mrlite.common.datastructures.Mapper;
 import com.neu.mrlite.common.datastructures.POCallback;
 import com.neu.mrlite.common.datastructures.Pair;
 import com.neu.mrlite.common.datastructures.Reducer;
+import com.neu.mrlite.common.exception.InvalidJobConfException;
 
 public class TestInterface implements Mapper, Reducer {
 
@@ -66,4 +68,19 @@ public class TestInterface implements Mapper, Reducer {
         return col3;
     }
 
+    /* Main method */
+    public static void main(String[] args) throws InvalidJobConfException {
+        JobConf job = new JobConf();
+
+        //TODO - should not be in JobConf, should be set automatically through JobListener 
+        job.setExecutableJar("mrlite-test-0.0.1-SNAPSHOT.jar");
+        job.setMapperClass(TestInterface.class);
+        job.setReducerClass(TestInterface.class);
+
+        job.setInputFilePath("sample.txt");
+        job.setOutDirPath("F:/");
+
+        // Start the job
+        job.scheduleJob();
+    }
 }

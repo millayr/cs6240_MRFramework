@@ -19,6 +19,6 @@ public class MRLiteClientBoot {
         if (args.length != 1) {
             usageAndExit();
         }
-        startClient(args[1]);
+        startClient(args[0]);
     }
 }

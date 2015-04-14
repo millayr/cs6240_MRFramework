@@ -37,7 +37,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.neu.mrlite.master.MRLiteMasterServerBoot</mainClass>
+							<mainClass>com.neu.mrlite.clients.MRLiteClientBoot</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
