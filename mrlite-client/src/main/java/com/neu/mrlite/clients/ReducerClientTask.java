@@ -66,7 +66,7 @@ public class ReducerClientTask extends Thread {
         Class<?> reducerClass = cl.loadClass(this.task.getReducerClass());
 
         // Get handle of run method using reflection
-        Method runMethod = reducerClass.getMethod("run",
+        Method runMethod = reducerClass.getMethod("reduce",
                 new Class[] { Assortment.class });
 
         // Invoke run method

@@ -82,7 +82,7 @@ public class MapperClientTask extends Thread {
         Class<?> cls = cl.loadClass(this.task.getMapperClass());
 
         // Get handle of run method using reflection
-        Method runMethod = cls.getMethod("run", new Class[] { String.class,
+        Method runMethod = cls.getMethod("map", new Class[] { String.class,
                 String.class });
 
         // Invoke run method
