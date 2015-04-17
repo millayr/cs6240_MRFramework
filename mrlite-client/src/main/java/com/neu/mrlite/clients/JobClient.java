@@ -114,6 +114,7 @@ public class JobClient extends Thread {
                             this.outputToMaster);
                     reduceClientTask.join();
                 }
+                this.outputToMaster.println("Task_Finished");
                 System.out.println(task.isMapperTask() ? "JobClient: Mapper "
                         : "Reducer " + "Task is complete");
             } catch (final Exception e) {
